@@ -69,6 +69,7 @@ if validateMatricesForMultiplication(A, B):
     T = A*B
     print R
     print NP.testing.assert_array_almost_equal(R, T)
+    NP.savetxt(argv[3],R)
 
 else:
     print ("Matrix dimension Error - Cannot take the product of a %dx%d and a "
