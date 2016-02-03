@@ -14,7 +14,7 @@ def recursiveBlockMultiply(matA, matB):
     """
     Recursively split two matrices until 2x2 or smaller then multiply
     """
-    if(matricesAreSplittable(matA,matB)):
+    if(shouldRecurse(matA,matB)):
         rowsA = matA.shape[0]
         colsA = matA.shape[1]
         rowsB = matB.shape[0]
@@ -59,14 +59,14 @@ def recursiveBlockMultiply(matA, matB):
         CD = NP.concatenate((C,D), axis=1)
         return NP.concatenate((AB,CD), axis=0)
 
-def matricesAreSplittable(matA, matB):
+def shouldRecurse(matA, matB):
     """
-    Return true if matA and matB both have dimensions greater than 3x3
+    Return true if matA and matB both have dimensions greater than 2x2
     """
-    splittable = False;
-    if(matA.shape[0] > 3 and matA.shape[1] > 3 and matB.shape[0] > 3 and matB.shape[1] > 3):
-        splittable = True;
-    return splittable
+    return (matA.shape[0] > 2 and
+            matA.shape[1] > 2 and
+            matB.shape[0] > 2 and
+            matB.shape[1] > 2)
 
 NP = numpy
 
@@ -80,7 +80,7 @@ if validateMatricesForMultiplication(A, B):
     R = recursiveBlockMultiply(A,B)
     T = A*B
     print R
-    print NP.testing.assert_array_almost_equal(R, T, 9)
+    print NP.testing.assert_array_almost_equal(R, T)
 
 
 else:
