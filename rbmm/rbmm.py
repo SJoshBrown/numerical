@@ -1,5 +1,5 @@
 """
-RBMM - Recursive block matrix multipication.
+RBMM - Recursive block matrix multiplication.
 By Josh Brown
 CS 3513 - Numerical methods
 Due - 2/10/16
@@ -18,7 +18,7 @@ def validate_matrices(mat_a, mat_b):
 def split(mat_a):
     """
     Takes one matrix and splits it into four quadrents, returning those
-    four matrices
+    four quadrents as matrices
     """
     rows_a = mat_a.shape[0]
     cols_a = mat_a.shape[1]
@@ -67,20 +67,21 @@ def should_recurse(mat_a, mat_b):
 
 
 NP = numpy
-
 A = NP.loadtxt(argv[1])
 B = NP.loadtxt(argv[2])
-
 A = NP.matrix(A)
 B = NP.matrix(B)
 
 if validate_matrices(A, B):
     R = block_multiply(A, B)
+
+    # TODO remove this before submitting
     T = A*B
     print R
     print NP.testing.assert_array_almost_equal(R, T)
-    NP.savetxt(argv[3], R)
     NP.savetxt('default_method.txt', T)
+
+    NP.savetxt(argv[3], R)
 
 else:
     print ("Matrix dimension Error - Cannot take the product of a %dx%d and a "
