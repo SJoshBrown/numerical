@@ -14,6 +14,7 @@ def validate_matrices(mat_a, mat_b):
     """
     return mat_a.shape[1] == mat_b.shape[0]
 
+
 def split(mat_a):
     """
     Takes one matrix and splits it into four quadrents, returning those
@@ -26,15 +27,16 @@ def split(mat_a):
     blk_a01 = mat_a[0:rows_a/2, cols_a/2:cols_a]
     blk_a10 = mat_a[rows_a/2:rows_a, 0:cols_a/2]
     blk_a11 = mat_a[rows_a/2:rows_a, cols_a/2:cols_a]
+
     return [blk_a00, blk_a01, blk_a10, blk_a11]
 
 
 def block_multiply(mat_a, mat_b):
     """
-    Recursively split two matrices until 2x2 or smaller then multiply
+    Multiply two matrices together using recursive block multiplication
+    returning the resulting matrix.
     """
     if should_recurse(mat_a, mat_b):
-
         blk_a00, blk_a01, blk_a10, blk_a11 = split(mat_a)
         blk_b00, blk_b01, blk_b10, blk_b11 = split(mat_b)
 
@@ -56,7 +58,7 @@ def block_multiply(mat_a, mat_b):
 
 def should_recurse(mat_a, mat_b):
     """
-    Return true if mat_a and mat_b both have dimensions greater than 2x2
+    Return true if mat_a or mat_b have dimensions greather than 2
     """
     return (mat_a.shape[0] > 2 or
             mat_a.shape[1] > 2 or
