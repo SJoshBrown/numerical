@@ -34,10 +34,14 @@ def block_multiply(mat_a, mat_b):
         blk_b10 = mat_b[rows_b/2:rows_b, 0:cols_b/2]
         blk_b11 = mat_b[rows_b/2:rows_b, cols_b/2:cols_b]
 
-        blk_a = block_multiply(blk_a00, blk_b00) + block_multiply(blk_a01, blk_b10)
-        blk_b = block_multiply(blk_a00, blk_b01) + block_multiply(blk_a01, blk_b11)
-        blk_c = block_multiply(blk_a10, blk_b00) + block_multiply(blk_a11, blk_b10)
-        blk_d = block_multiply(blk_a10, blk_b01) + block_multiply(blk_a11, blk_b11)
+        blk_a = block_multiply(blk_a00, blk_b00) + \
+                block_multiply(blk_a01, blk_b10)
+        blk_b = block_multiply(blk_a00, blk_b01) + \
+                block_multiply(blk_a01, blk_b11)
+        blk_c = block_multiply(blk_a10, blk_b00) + \
+                block_multiply(blk_a11, blk_b10)
+        blk_d = block_multiply(blk_a10, blk_b01) + \
+                block_multiply(blk_a11, blk_b11)
         blk_ab = NP.concatenate((blk_a, blk_b), axis=1)
         blk_cd = NP.concatenate((blk_c, blk_d), axis=1)
         return NP.concatenate((blk_ab, blk_cd), axis=0)
@@ -50,9 +54,9 @@ def should_recurse(mat_a, mat_b):
     """
     Return true if mat_a and mat_b both have dimensions greater than 2x2
     """
-    return (mat_a.shape[0] > 2 and
-            mat_a.shape[1] > 2 and
-            mat_b.shape[0] > 2 and
+    return (mat_a.shape[0] > 2 or
+            mat_a.shape[1] > 2 or
+            mat_b.shape[0] > 2 or
             mat_b.shape[1] > 2)
 
 
