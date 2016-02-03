@@ -9,16 +9,14 @@ import numpy
 
 
 def validate_matrices(mat_a, mat_b):
-    """
-    return true if matrices are well conditioned for multipication
-    """
+    """Return true if matrices are well conditioned for multipication."""
     return mat_a.shape[1] == mat_b.shape[0]
 
 
 def split(mat_in):
     """
     Takes one matrix and splits it into four quadrents, returning those
-    four quadrents as matrices
+    four quadrents as matrices.
     """
     rows_a = mat_in.shape[0]
     cols_a = mat_in.shape[1]
@@ -57,9 +55,7 @@ def block_multiply(mat_a, mat_b):
 
 
 def should_recurse(mat_a, mat_b):
-    """
-    Return true if mat_a or mat_b have dimensions greather than 2
-    """
+    """Return true if mat_a or mat_b have dimensions greather than 2."""
     return (mat_a.shape[0] > 2 or
             mat_a.shape[1] > 2 or
             mat_b.shape[0] > 2 or
