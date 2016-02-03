@@ -19,19 +19,19 @@ def recursiveBlockMultiply(matA, matB):
         colsA = matA.shape[1]
         rowsB = matB.shape[0]
         colsB = matB.shape[1]
-        A11 = matA[0:rowsA/2,0:colsA/2]
-        A12 = matA[0:rowsA/2,colsA/2:colsA]
-        A21 = matA[rowsA/2:rowsA,0:colsA/2]
-        A22 = matA[rowsA/2:rowsA,colsA/2:colsA]
-        B11 = matB[0:rowsB/2,0:colsB/2]
-        B12 = matB[0:rowsB/2,colsB/2:colsB]
-        B21 = matB[rowsB/2:rowsB,0:colsB/2]
-        B22 = matB[rowsB/2:rowsB,colsB/2:colsB]
+        A00 = matA[0:rowsA/2,0:colsA/2]
+        A01 = matA[0:rowsA/2,colsA/2:colsA]
+        A10 = matA[rowsA/2:rowsA,0:colsA/2]
+        A11 = matA[rowsA/2:rowsA,colsA/2:colsA]
+        B00 = matB[0:rowsB/2,0:colsB/2]
+        B01 = matB[0:rowsB/2,colsB/2:colsB]
+        B10 = matB[rowsB/2:rowsB,0:colsB/2]
+        B11 = matB[rowsB/2:rowsB,colsB/2:colsB]
 
-        A = recursiveBlockMultiply(A11,B11) + recursiveBlockMultiply(A12, B21)
-        B = recursiveBlockMultiply(A11,B12) + recursiveBlockMultiply(A12, B22)
-        C = recursiveBlockMultiply(A21,B11) + recursiveBlockMultiply(A22, B21)
-        D = recursiveBlockMultiply(A21,B12) + recursiveBlockMultiply(A22, B22)
+        A = recursiveBlockMultiply(A00,B00) + recursiveBlockMultiply(A01, B10)
+        B = recursiveBlockMultiply(A00,B01) + recursiveBlockMultiply(A01, B11)
+        C = recursiveBlockMultiply(A10,B00) + recursiveBlockMultiply(A11, B10)
+        D = recursiveBlockMultiply(A10,B01) + recursiveBlockMultiply(A11, B11)
         AB = NP.concatenate((A,B), axis=1)
         CD = NP.concatenate((C,D), axis=1)
         return NP.concatenate((AB,CD), axis=0)
@@ -41,25 +41,23 @@ def recursiveBlockMultiply(matA, matB):
         colsA = matA.shape[1]
         rowsB = matB.shape[0]
         colsB = matB.shape[1]
-        A11 = matA[0:rowsA/2,0:colsA/2]
-        A12 = matA[0:rowsA/2,colsA/2:colsA]
-        A21 = matA[rowsA/2:rowsA,0:colsA/2]
-        A22 = matA[rowsA/2:rowsA,colsA/2:colsA]
-        B11 = matB[0:rowsB/2,0:colsB/2]
-        B12 = matB[0:rowsB/2,colsB/2:colsB]
-        B21 = matB[rowsB/2:rowsB,0:colsB/2]
-        B22 = matB[rowsB/2:rowsB,colsB/2:colsB]
+        A00 = matA[0:rowsA/2,0:colsA/2]
+        A01 = matA[0:rowsA/2,colsA/2:colsA]
+        A10 = matA[rowsA/2:rowsA,0:colsA/2]
+        A11 = matA[rowsA/2:rowsA,colsA/2:colsA]
+        B00 = matB[0:rowsB/2,0:colsB/2]
+        B01 = matB[0:rowsB/2,colsB/2:colsB]
+        B10 = matB[rowsB/2:rowsB,0:colsB/2]
+        B11 = matB[rowsB/2:rowsB,colsB/2:colsB]
 
-        A = A11 * B11 + A12 * B21
-        B = A11 * B12 + A12 * B22
-        C = A21 * B11 + A22 * B21
-        D = A21 * B12 + A22 * B22
+        A = A00 * B00 + A01 * B10
+        B = A00 * B01 + A01 * B11
+        C = A10 * B00 + A11 * B10
+        D = A10 * B01 + A11 * B11
 
         AB = NP.concatenate((A,B), axis=1)
         CD = NP.concatenate((C,D), axis=1)
         return NP.concatenate((AB,CD), axis=0)
-
-    return "broke"
 
 def matricesAreSplittable(matA, matB):
     """
@@ -79,11 +77,11 @@ A = NP.matrix(A)
 B = NP.matrix(B)
 
 if validateMatricesForMultiplication(A, B):
-    print "\n\n\n"
-    NP.savetxt('recurse.txt', recursiveBlockMultiply(A, B))
-    print "\n\n\n"
-    NP.savetxt('test.txt', A*B)
-    #print A*B == recursiveBlockMultiply(A, B)
+    R = recursiveBlockMultiply(A,B)
+    T = A*B
+    print R
+    print NP.testing.assert_array_almost_equal(R, T, 9)
+
 
 else:
     print "Matrix dimension Error - Cannot take the product of a %dx%d and a %dx%d matrix." % (A.shape[0],A.shape[1],B.shape[0],B.shape[1])
