@@ -15,20 +15,20 @@ def validate_matrices(mat_a, mat_b):
     return mat_a.shape[1] == mat_b.shape[0]
 
 
-def split(mat_a):
+def split(mat_in):
     """
     Takes one matrix and splits it into four quadrents, returning those
     four quadrents as matrices
     """
-    rows_a = mat_a.shape[0]
-    cols_a = mat_a.shape[1]
+    rows_a = mat_in.shape[0]
+    cols_a = mat_in.shape[1]
 
-    blk_a00 = mat_a[0:rows_a/2, 0:cols_a/2]
-    blk_a01 = mat_a[0:rows_a/2, cols_a/2:cols_a]
-    blk_a10 = mat_a[rows_a/2:rows_a, 0:cols_a/2]
-    blk_a11 = mat_a[rows_a/2:rows_a, cols_a/2:cols_a]
+    blk_00 = mat_in[0:rows_a/2, 0:cols_a/2]
+    blk_01 = mat_in[0:rows_a/2, cols_a/2:cols_a]
+    blk_10 = mat_in[rows_a/2:rows_a, 0:cols_a/2]
+    blk_11 = mat_in[rows_a/2:rows_a, cols_a/2:cols_a]
 
-    return [blk_a00, blk_a01, blk_a10, blk_a11]
+    return [blk_00, blk_01, blk_10, blk_11]
 
 
 def block_multiply(mat_a, mat_b):
@@ -40,17 +40,17 @@ def block_multiply(mat_a, mat_b):
         blk_a00, blk_a01, blk_a10, blk_a11 = split(mat_a)
         blk_b00, blk_b01, blk_b10, blk_b11 = split(mat_b)
 
-        blk_a = block_multiply(blk_a00, blk_b00) + \
+        blk_00 = block_multiply(blk_a00, blk_b00) + \
                 block_multiply(blk_a01, blk_b10)
-        blk_b = block_multiply(blk_a00, blk_b01) + \
+        blk_01 = block_multiply(blk_a00, blk_b01) + \
                 block_multiply(blk_a01, blk_b11)
-        blk_c = block_multiply(blk_a10, blk_b00) + \
+        blk_10 = block_multiply(blk_a10, blk_b00) + \
                 block_multiply(blk_a11, blk_b10)
-        blk_d = block_multiply(blk_a10, blk_b01) + \
+        blk_11 = block_multiply(blk_a10, blk_b01) + \
                 block_multiply(blk_a11, blk_b11)
 
-        return NP.concatenate((NP.concatenate((blk_a, blk_b), 1),\
-                               NP.concatenate((blk_c, blk_d), 1)), 0)
+        return NP.concatenate((NP.concatenate((blk_00, blk_01), 1),\
+                               NP.concatenate((blk_10, blk_11), 1)), 0)
 
     else:
         return mat_a * mat_b
