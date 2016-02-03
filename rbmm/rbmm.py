@@ -4,56 +4,56 @@ By Josh Brown
 CS 3513 - Numerical methods
 Due - 2/10/16
 """
-import numpy
 from sys import argv
+import numpy
 
 
-def validate_matrices(matA, matB):
+def validate_matrices(mat_a, mat_b):
     """
     return true if matrices are well conditioned for multipication
     """
-    return matA.shape[1] == matB.shape[0]
+    return mat_a.shape[1] == mat_b.shape[0]
 
 
-def block_multiply(matA, matB):
+def block_multiply(mat_a, mat_b):
     """
     Recursively split two matrices until 2x2 or smaller then multiply
     """
-    if(should_recurse(matA, matB)):
-        rowsA = matA.shape[0]
-        colsA = matA.shape[1]
-        rowsB = matB.shape[0]
-        colsB = matB.shape[1]
+    if should_recurse(mat_a, mat_b):
+        rows_a = mat_a.shape[0]
+        cols_a = mat_a.shape[1]
+        rows_b = mat_b.shape[0]
+        cols_b = mat_b.shape[1]
 
-        A00 = matA[0:rowsA/2,0:colsA/2]
-        A01 = matA[0:rowsA/2,colsA/2:colsA]
-        A10 = matA[rowsA/2:rowsA,0:colsA/2]
-        A11 = matA[rowsA/2:rowsA,colsA/2:colsA]
-        B00 = matB[0:rowsB/2,0:colsB/2]
-        B01 = matB[0:rowsB/2,colsB/2:colsB]
-        B10 = matB[rowsB/2:rowsB,0:colsB/2]
-        B11 = matB[rowsB/2:rowsB,colsB/2:colsB]
+        blk_a00 = mat_a[0:rows_a/2, 0:cols_a/2]
+        blk_a01 = mat_a[0:rows_a/2, cols_a/2:cols_a]
+        blk_a10 = mat_a[rows_a/2:rows_a, 0:cols_a/2]
+        blk_a11 = mat_a[rows_a/2:rows_a, cols_a/2:cols_a]
+        blk_b00 = mat_b[0:rows_b/2, 0:cols_b/2]
+        blk_b01 = mat_b[0:rows_b/2, cols_b/2:cols_b]
+        blk_b10 = mat_b[rows_b/2:rows_b, 0:cols_b/2]
+        blk_b11 = mat_b[rows_b/2:rows_b, cols_b/2:cols_b]
 
-        A = block_multiply(A00, B00) + block_multiply(A01, B10)
-        B = block_multiply(A00, B01) + block_multiply(A01, B11)
-        C = block_multiply(A10, B00) + block_multiply(A11, B10)
-        D = block_multiply(A10, B01) + block_multiply(A11, B11)
-        AB = NP.concatenate((A, B), axis=1)
-        CD = NP.concatenate((C, D), axis=1)
-        return NP.concatenate((AB, CD), axis=0)
+        blk_a = block_multiply(blk_a00, blk_b00) + block_multiply(blk_a01, blk_b10)
+        blk_b = block_multiply(blk_a00, blk_b01) + block_multiply(blk_a01, blk_b11)
+        blk_c = block_multiply(blk_a10, blk_b00) + block_multiply(blk_a11, blk_b10)
+        blk_d = block_multiply(blk_a10, blk_b01) + block_multiply(blk_a11, blk_b11)
+        blk_ab = NP.concatenate((blk_a, blk_b), axis=1)
+        blk_cd = NP.concatenate((blk_c, blk_d), axis=1)
+        return NP.concatenate((blk_ab, blk_cd), axis=0)
 
     else:
-        return matA * matB
+        return mat_a * mat_b
 
 
-def should_recurse(matA, matB):
+def should_recurse(mat_a, mat_b):
     """
-    Return true if matA and matB both have dimensions greater than 2x2
+    Return true if mat_a and mat_b both have dimensions greater than 2x2
     """
-    return (matA.shape[0] > 2 and
-            matA.shape[1] > 2 and
-            matB.shape[0] > 2 and
-            matB.shape[1] > 2)
+    return (mat_a.shape[0] > 2 and
+            mat_a.shape[1] > 2 and
+            mat_b.shape[0] > 2 and
+            mat_b.shape[1] > 2)
 
 
 NP = numpy
@@ -73,4 +73,4 @@ if validate_matrices(A, B):
 
 else:
     print ("Matrix dimension Error - Cannot take the product of a %dx%d and a "
-    "%dx%d matrix.") % (A.shape[0], A.shape[1], B.shape[0], B.shape[1])
+           "%dx%d matrix.") % (A.shape[0], A.shape[1], B.shape[0], B.shape[1])
