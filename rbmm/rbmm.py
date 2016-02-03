@@ -1,14 +1,19 @@
 """
 RBMM - Recursive block matrix multipication.
+By Josh Brown
+CS 3513 - Numerical methods
+
 """
 import numpy
 from sys import argv
+
 
 def validateMatricesForMultiplication(matA, matB):
     """
     return true if matrices are well conditioned for multipication
     """
     return matA.shape[1] == matB.shape[0]
+
 
 def recursiveBlockMultiply(matA, matB):
     """
@@ -19,6 +24,7 @@ def recursiveBlockMultiply(matA, matB):
         colsA = matA.shape[1]
         rowsB = matB.shape[0]
         colsB = matB.shape[1]
+
         A00 = matA[0:rowsA/2,0:colsA/2]
         A01 = matA[0:rowsA/2,colsA/2:colsA]
         A10 = matA[rowsA/2:rowsA,0:colsA/2]
@@ -37,27 +43,8 @@ def recursiveBlockMultiply(matA, matB):
         return NP.concatenate((AB,CD), axis=0)
 
     else:
-        rowsA = matA.shape[0]
-        colsA = matA.shape[1]
-        rowsB = matB.shape[0]
-        colsB = matB.shape[1]
-        A00 = matA[0:rowsA/2,0:colsA/2]
-        A01 = matA[0:rowsA/2,colsA/2:colsA]
-        A10 = matA[rowsA/2:rowsA,0:colsA/2]
-        A11 = matA[rowsA/2:rowsA,colsA/2:colsA]
-        B00 = matB[0:rowsB/2,0:colsB/2]
-        B01 = matB[0:rowsB/2,colsB/2:colsB]
-        B10 = matB[rowsB/2:rowsB,0:colsB/2]
-        B11 = matB[rowsB/2:rowsB,colsB/2:colsB]
+        return matA * matB
 
-        A = A00 * B00 + A01 * B10
-        B = A00 * B01 + A01 * B11
-        C = A10 * B00 + A11 * B10
-        D = A10 * B01 + A11 * B11
-
-        AB = NP.concatenate((A,B), axis=1)
-        CD = NP.concatenate((C,D), axis=1)
-        return NP.concatenate((AB,CD), axis=0)
 
 def shouldRecurse(matA, matB):
     """
@@ -67,6 +54,7 @@ def shouldRecurse(matA, matB):
             matA.shape[1] > 2 and
             matB.shape[0] > 2 and
             matB.shape[1] > 2)
+
 
 NP = numpy
 
@@ -82,6 +70,6 @@ if validateMatricesForMultiplication(A, B):
     print R
     print NP.testing.assert_array_almost_equal(R, T)
 
-
 else:
-    print "Matrix dimension Error - Cannot take the product of a %dx%d and a %dx%d matrix." % (A.shape[0],A.shape[1],B.shape[0],B.shape[1])
+    print ("Matrix dimension Error - Cannot take the product of a %dx%d and a "
+    "%dx%d matrix.") % (A.shape[0],A.shape[1],B.shape[0],B.shape[1])
