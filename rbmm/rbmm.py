@@ -65,26 +65,29 @@ def should_recurse(mat_a, mat_b):
 def main(sys_argv):
     """
     Main function that takes in 3 command line arguments matrixA matrixB
-    and Output. Mutliplies matrixA by matrixB and outputs to the specified
-    output file.
+    and Output as text files. Mutliplies matrixA by matrixB and outputs to the
+    specified output file.
     """
     NP = numpy
-    A = NP.loadtxt(sys_argv[1])
-    B = NP.loadtxt(sys_argv[2])
-    A = NP.matrix(A)
-    B = NP.matrix(B)
-    C = NP.zeros([A.shape[0], B.shape[1]])
+    matrix_a = NP.loadtxt(sys_argv[1])
+    matrix_b = NP.loadtxt(sys_argv[2])
+    matrix_a = NP.matrix(matrix_a)
+    matrix_b = NP.matrix(matrix_b)
+    matrix_c = NP.zeros([matrix_a.shape[0], matrix_b.shape[1]])
 
-    if validate_matrices(A, B):
-        block_multiply(A, B, C)
-        NP.savetxt(argv[3], C)
+    if validate_matrices(matrix_a, matrix_b):
+        block_multiply(matrix_a, matrix_b, matrix_c)
+        NP.savetxt(argv[3], matrix_c)
 
         # TODO remove this be for submitting
-        NP.savetxt('test.txt', A*B)
+        NP.savetxt('test.txt', matrix_a * matrix_b)
 
     else:
-        print ("Matrix dimension Error - Cannot take the product of a %dx%d and a "
-               "%dx%d matrix.") % (A.shape[0], A.shape[1], B.shape[0], B.shape[1])
+        print ("Matrix dimension Error - Cannot take the product of a %dx%d and"
+        " a %dx%d matrix.") % (matrix_a.shape[0],
+                               matrix_a.shape[1],
+                               matrix_b.shape[0],
+                               matrix_b.shape[1])
 
 
 if __name__ == '__main__':
