@@ -29,29 +29,43 @@ def split(mat_in):
     return [blk_00, blk_01, blk_10, blk_11]
 
 
-def block_multiply(mat_a, mat_b):
+def block_multiply(mat_a, mat_b, mat_c):
     """
     Multiply two matrices together using recursive block multiplication
     returning the resulting matrix.
     """
+
     if should_recurse(mat_a, mat_b):
         blk_a00, blk_a01, blk_a10, blk_a11 = split(mat_a)
         blk_b00, blk_b01, blk_b10, blk_b11 = split(mat_b)
+        blk_c00, blk_c01, blk_c10, blk_c11 = split(mat_c)
 
-        blk_00 = block_multiply(blk_a00, blk_b00) + \
-                block_multiply(blk_a01, blk_b10)
-        blk_01 = block_multiply(blk_a00, blk_b01) + \
-                block_multiply(blk_a01, blk_b11)
-        blk_10 = block_multiply(blk_a10, blk_b00) + \
-                block_multiply(blk_a11, blk_b10)
-        blk_11 = block_multiply(blk_a10, blk_b01) + \
-                block_multiply(blk_a11, blk_b11)
 
-        return NP.concatenate((NP.concatenate((blk_00, blk_01), 1),\
-                               NP.concatenate((blk_10, blk_11), 1)), 0)
+        # temp_A00 = blk_a00 * blk_b00
+        # temp_A01 = blk_a00 * blk_b01
+        # temp_A10 = blk_a10 * blk_b00
+        # temp_A11 = blk_a10 * blk_b01
+        block_multiply(blk_a00, blk_b00, blk_c00)
+        block_multiply(blk_a01, blk_b10, blk_c00)
+        block_multiply(blk_a00, blk_b01, blk_c01)
+        block_multiply(blk_a01, blk_b11, blk_c01)
+        block_multiply(blk_a10, blk_b00, blk_c10)
+        block_multiply(blk_a11, blk_b10, blk_c10)
+        block_multiply(blk_a10, blk_b01, blk_c11)
+        block_multiply(blk_a11, blk_b11, blk_c11)
+
+        # blk_00 = block_multiply(blk_a00, blk_b00, ) + \
+        #         block_multiply(blk_a01, blk_b10)
+        # blk_01 = block_multiply(blk_a00, blk_b01) + \
+        #         block_multiply(blk_a01, blk_b11)
+        # blk_10 = block_multiply(blk_a10, blk_b00) + \
+        #         block_multiply(blk_a11, blk_b10)
+        # blk_11 = block_multiply(blk_a10, blk_b01) + \
+        #         block_multiply(blk_a11, blk_b11)
 
     else:
-        return mat_a * mat_b
+        mat_c += mat_a * mat_b
+        return
 
 
 def should_recurse(mat_a, mat_b):
@@ -67,17 +81,20 @@ A = NP.loadtxt(argv[1])
 B = NP.loadtxt(argv[2])
 A = NP.matrix(A)
 B = NP.matrix(B)
+C = NP.zeros([A.shape[0], B.shape[1]])
+C = NP.matrix(C)
 
 if validate_matrices(A, B):
-    R = block_multiply(A, B)
+    R = block_multiply(A, B, C)
 
     # TODO remove this before submitting
     T = A*B
-    print R
-    print NP.testing.assert_array_almost_equal(R, T)
+    print T
+    print C
+    # print NP.testing.assert_array_almost_equal(R, T)
     NP.savetxt('default_method.txt', T)
 
-    NP.savetxt(argv[3], R)
+    NP.savetxt(argv[3], C)
 
 else:
     print ("Matrix dimension Error - Cannot take the product of a %dx%d and a "
