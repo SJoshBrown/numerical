@@ -66,22 +66,20 @@ def should_recurse(mat_a, mat_b):
             mat_b.shape[1] > 2)
 
 
-def main(sys_argv):
+def main(file_a, file_b, out_file):
     """
-    Main function for rbmm that takes in 3 command line arguments matrixA
-    matrixB and Output as text files. Mutliplies matrixA by matrixB and outputs
-    to the specified output file.
+    Main function for rbmm that takes in 3 arguments matrixA matrixB and Output
+    as text files. Mutliplies matrixA by matrixB and outputs to the specified
+    output file.
     """
     NP = numpy
-    matrix_a = NP.loadtxt(sys_argv[1])
-    matrix_b = NP.loadtxt(sys_argv[2])
-    matrix_a = NP.matrix(matrix_a)
-    matrix_b = NP.matrix(matrix_b)
+    matrix_a = NP.matrix(NP.loadtxt(file_a))
+    matrix_b = NP.matrix(NP.loadtxt(file_b))
     matrix_c = NP.zeros([matrix_a.shape[0], matrix_b.shape[1]])
 
     if validate_matrices(matrix_a, matrix_b):
         block_multiply(matrix_a, matrix_b, matrix_c)
-        NP.savetxt(argv[3], matrix_c)
+        NP.savetxt(out_file, matrix_c)
 
         # TODO remove this be for submitting
         NP.savetxt('test.txt', matrix_a * matrix_b)
@@ -95,4 +93,4 @@ def main(sys_argv):
 
 
 if __name__ == '__main__':
-    main(argv)
+    main(argv[1], argv[2], argv[3])
