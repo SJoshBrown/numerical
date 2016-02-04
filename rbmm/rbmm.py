@@ -18,13 +18,13 @@ def split(to_split):
     Takes one matrix and splits it into four quadrents, returning those
     four quadrents as slices of the input matrix.
     """
-    rows = to_split.shape[0]
-    cols = to_split.shape[1]
+    half_rows = to_split.shape[0]/2
+    half_cols = to_split.shape[1]/2
 
-    blk_00 = to_split[:rows/2, :cols/2]
-    blk_01 = to_split[:rows/2, cols/2:]
-    blk_10 = to_split[rows/2:, :cols/2]
-    blk_11 = to_split[rows/2:, cols/2:]
+    blk_00 = to_split[:half_rows, :half_cols]
+    blk_01 = to_split[:half_rows, half_cols:]
+    blk_10 = to_split[half_rows:, :half_cols]
+    blk_11 = to_split[half_rows:, half_cols:]
 
     return [blk_00, blk_01, blk_10, blk_11]
 
@@ -32,7 +32,7 @@ def split(to_split):
 def block_multiply(mat_a, mat_b, mat_c):
     """
     Multiply two matrices mat_a and mat_b together using recursive block
-    multiplication and adding the result to mat_c.
+    multiplication and adding the result to a pre initialized matrix mat_c.
     """
 
     if should_recurse(mat_a, mat_b):
@@ -40,18 +40,22 @@ def block_multiply(mat_a, mat_b, mat_c):
         b00, b01, b10, b11 = split(mat_b)
         c00, c01, c10, c11 = split(mat_c)
 
-        block_multiply(a00, b00, c00)
-        block_multiply(a01, b10, c00)
-        block_multiply(a00, b01, c01)
-        block_multiply(a01, b11, c01)
-        block_multiply(a10, b00, c10)
-        block_multiply(a11, b10, c10)
-        block_multiply(a10, b01, c11)
-        block_multiply(a11, b11, c11)
+        # If a dimension of cXX is 0 then no need to multiply
+        if c00.shape[0] and c00.shape[1]:
+            block_multiply(a00, b00, c00)
+            block_multiply(a01, b10, c00)
+        if c01.shape[0] and c01.shape[1]:
+            block_multiply(a00, b01, c01)
+            block_multiply(a01, b11, c01)
+        if c10.shape[0] and c10.shape[1]:
+            block_multiply(a10, b00, c10)
+            block_multiply(a11, b10, c10)
+        if c11.shape[0] and c11.shape[1]:
+            block_multiply(a10, b01, c11)
+            block_multiply(a11, b11, c11)
 
     else:
         mat_c += mat_a * mat_b
-        return
 
 
 def should_recurse(mat_a, mat_b):
@@ -64,9 +68,9 @@ def should_recurse(mat_a, mat_b):
 
 def main(sys_argv):
     """
-    Main function that takes in 3 command line arguments matrixA matrixB
-    and Output as text files. Mutliplies matrixA by matrixB and outputs to the
-    specified output file.
+    Main function for rbmm that takes in 3 command line arguments matrixA
+    matrixB and Output as text files. Mutliplies matrixA by matrixB and outputs
+    to the specified output file.
     """
     NP = numpy
     matrix_a = NP.loadtxt(sys_argv[1])
@@ -84,10 +88,10 @@ def main(sys_argv):
 
     else:
         print ("Matrix dimension Error - Cannot take the product of a %dx%d and"
-        " a %dx%d matrix.") % (matrix_a.shape[0],
-                               matrix_a.shape[1],
-                               matrix_b.shape[0],
-                               matrix_b.shape[1])
+               " a %dx%d matrix.") % (matrix_a.shape[0],
+                                      matrix_a.shape[1],
+                                      matrix_b.shape[0],
+                                      matrix_b.shape[1])
 
 
 if __name__ == '__main__':
