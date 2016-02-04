@@ -31,8 +31,8 @@ def split(mat_in):
 
 def block_multiply(mat_a, mat_b, mat_c):
     """
-    Multiply two matrices together using recursive block multiplication
-    returning the resulting matrix.
+    Multiply two matrices mat_a and mat_b together using recursive block
+    multiplication and adding the result to mat_c.
     """
 
     if should_recurse(mat_a, mat_b):
@@ -40,11 +40,6 @@ def block_multiply(mat_a, mat_b, mat_c):
         blk_b00, blk_b01, blk_b10, blk_b11 = split(mat_b)
         blk_c00, blk_c01, blk_c10, blk_c11 = split(mat_c)
 
-
-        # temp_A00 = blk_a00 * blk_b00
-        # temp_A01 = blk_a00 * blk_b01
-        # temp_A10 = blk_a10 * blk_b00
-        # temp_A11 = blk_a10 * blk_b01
         block_multiply(blk_a00, blk_b00, blk_c00)
         block_multiply(blk_a01, blk_b10, blk_c00)
         block_multiply(blk_a00, blk_b01, blk_c01)
@@ -53,15 +48,6 @@ def block_multiply(mat_a, mat_b, mat_c):
         block_multiply(blk_a11, blk_b10, blk_c10)
         block_multiply(blk_a10, blk_b01, blk_c11)
         block_multiply(blk_a11, blk_b11, blk_c11)
-
-        # blk_00 = block_multiply(blk_a00, blk_b00, ) + \
-        #         block_multiply(blk_a01, blk_b10)
-        # blk_01 = block_multiply(blk_a00, blk_b01) + \
-        #         block_multiply(blk_a01, blk_b11)
-        # blk_10 = block_multiply(blk_a10, blk_b00) + \
-        #         block_multiply(blk_a11, blk_b10)
-        # blk_11 = block_multiply(blk_a10, blk_b01) + \
-        #         block_multiply(blk_a11, blk_b11)
 
     else:
         mat_c += mat_a * mat_b
@@ -85,13 +71,12 @@ C = NP.zeros([A.shape[0], B.shape[1]])
 C = NP.matrix(C)
 
 if validate_matrices(A, B):
-    R = block_multiply(A, B, C)
+    block_multiply(A, B, C)
 
     # TODO remove this before submitting
     T = A*B
-    print T
     print C
-    # print NP.testing.assert_array_almost_equal(R, T)
+    print NP.testing.assert_array_almost_equal(C, T)
     NP.savetxt('default_method.txt', T)
 
     NP.savetxt(argv[3], C)
