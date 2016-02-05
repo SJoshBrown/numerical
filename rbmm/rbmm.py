@@ -34,7 +34,6 @@ def block_multiply(mat_a, mat_b, mat_c):
     Multiply two matrices mat_a and mat_b together using recursive block
     multiplication and adding the result to a pre initialized matrix mat_c.
     """
-
     if should_recurse(mat_a, mat_b):
         a00, a01, a10, a11 = split(mat_a)
         b00, b01, b10, b11 = split(mat_b)
@@ -59,11 +58,11 @@ def block_multiply(mat_a, mat_b, mat_c):
 
 
 def should_recurse(mat_a, mat_b):
-    """Return true if mat_a or mat_b have dimensions greather than 2."""
-    return (mat_a.shape[0] > 2 or
-            mat_a.shape[1] > 2 or
-            mat_b.shape[0] > 2 or
-            mat_b.shape[1] > 2)
+    """Return true if mat_a or mat_b have any dimensions greather than 2."""
+    MAX_SIZE = 2
+    return (mat_a.shape[0] > MAX_SIZE or
+            mat_a.shape[1] > MAX_SIZE or
+            mat_b.shape[1] > MAX_SIZE)
 
 
 def main(file_a, file_b, out_file):
@@ -79,10 +78,10 @@ def main(file_a, file_b, out_file):
 
     if validate_matrices(matrix_a, matrix_b):
         block_multiply(matrix_a, matrix_b, matrix_c)
-        NP.savetxt(out_file, matrix_c)
+        NP.savetxt(out_file, matrix_c, '%20.8f')
 
         # TODO remove this be for submitting
-        NP.savetxt('test.txt', matrix_a * matrix_b)
+        NP.savetxt('test.txt', matrix_a * matrix_b, '%20.8f')
 
     else:
         print ("Matrix dimension Error - Cannot take the product of a %dx%d and"
