@@ -7,6 +7,7 @@ Due - 2/10/16
 from sys import argv
 import numpy
 
+BASE_SIZE = 2
 
 def validate_matrices(mat_a, mat_b):
     """Return true if matrices are well conditioned for multipication."""
@@ -32,14 +33,14 @@ def split(to_split):
 def block_multiply(mat_a, mat_b, mat_c):
     """
     Multiply two matrices mat_a and mat_b together using recursive block
-    multiplication and adding the result to a pre initialized matrix mat_c.
+    multiplication and adding the result to a pre initialized zero matrix mat_c.
     """
     if should_recurse(mat_a, mat_b):
         a00, a01, a10, a11 = split(mat_a)
         b00, b01, b10, b11 = split(mat_b)
         c00, c01, c10, c11 = split(mat_c)
 
-        # If a dimension of cXX is 0 then no need to multiply
+        # If a dimension of cXX is 0 then no need attempt multiplication
         if c00.shape[0] and c00.shape[1]:
             block_multiply(a00, b00, c00)
             block_multiply(a01, b10, c00)
@@ -58,11 +59,12 @@ def block_multiply(mat_a, mat_b, mat_c):
 
 
 def should_recurse(mat_a, mat_b):
-    """Return true if mat_a or mat_b have any dimensions greather than 2."""
-    MAX_SIZE = 2
-    return (mat_a.shape[0] > MAX_SIZE or
-            mat_a.shape[1] > MAX_SIZE or
-            mat_b.shape[1] > MAX_SIZE)
+    """
+    Return true if mat_a or mat_b have any dimensions greather than BASE_SIZE.
+    """
+    return (mat_a.shape[0] > BASE_SIZE or
+            mat_a.shape[1] > BASE_SIZE or
+            mat_b.shape[1] > BASE_SIZE)
 
 
 def main(file_a, file_b, out_file):
