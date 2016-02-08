@@ -79,8 +79,17 @@ def main(file_a, file_b, out_file):
     matrix_c = NP.zeros([matrix_a.shape[0], matrix_b.shape[1]])
 
     if validate_matrices(matrix_a, matrix_b):
-        block_multiply(matrix_a, matrix_b, matrix_c)
-        NP.savetxt(out_file, matrix_c, '%20.8f')
+        try:
+            block_multiply(matrix_a, matrix_b, matrix_c)
+            if float('inf') in matrix_c:
+                raise OverflowError("Floating point overflow to inf")
+            if float('-inf') in matrix_c:
+                raise OverflowError("Floating point overflow to -inf")
+
+            NP.savetxt(out_file, matrix_c, '%20.8f')
+
+        except OverflowError as err:
+            print err.args
 
     else:
         print ("Matrix dimension Error - Cannot take the product of a %dx%d and"
