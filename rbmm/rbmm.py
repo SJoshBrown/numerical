@@ -82,9 +82,6 @@ def main(file_a, file_b, out_file):
         block_multiply(matrix_a, matrix_b, matrix_c)
         NP.savetxt(out_file, matrix_c, '%20.8f')
 
-        # TODO remove this be for submitting
-        NP.savetxt('test.txt', matrix_a * matrix_b, '%20.8f')
-
     else:
         print ("Matrix dimension Error - Cannot take the product of a %dx%d and"
                " a %dx%d matrix.") % (matrix_a.shape[0],
