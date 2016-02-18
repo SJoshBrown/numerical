@@ -8,7 +8,10 @@ from sys import argv
 import math
 import numpy
 
-BASE_SIZE = int(argv[3])
+if len(argv) == 4:
+    BASE_SIZE = int(argv[3])
+else:
+    BASE_SIZE = 8
 NP = numpy
 
 
@@ -69,8 +72,8 @@ def forwardsub(l10, l00, g10):
     
 def is_pos_def(matrix_in):
     """
-    checks if the matrix is a positive definite matrix. I found the algorithm
-    at https://stackoverflow.com/questions/16266720/find-out-if-matrix-is-positive-definite-with-numpy#16270026.
+    checks if the matrix is a positive definite matrix. I found the algorithm at
+    https://stackoverflow.com/questions/16266720/find-out-if-matrix-is-positive-definite-with-numpy#16270026.
     """
     return NP.all(NP.linalg.eigvals(matrix_in) > 0)
 
@@ -87,10 +90,10 @@ def main(file_a, out_file):
     if is_pos_def(matrix_g):
         block_cholesky(matrix_g, matrix_l)
         print matrix_l
-        print matrix_a.T * matrix_a
-        print matrix_l * NP.matrix(matrix_l.T)
 
-        print NP.testing.assert_array_almost_equal(matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
+        print NP.testing.assert_array_almost_equal\
+            (matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
+        NP.savetxt(out_file, matrix_l, '%15.8f')
     else:
         print "Not pos def"
 
