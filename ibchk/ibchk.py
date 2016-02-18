@@ -47,7 +47,8 @@ def block_cholesky(mat_in, mat_l):
         l10 = mat_l[i + BASE_SIZE:, i:i + BASE_SIZE]
         forwardsub(l10, l00, g10)
 
-        mat_in[i + BASE_SIZE:, i + BASE_SIZE:] -= update_remaining_submatrix(l10)
+        mat_in[i + BASE_SIZE:, i + BASE_SIZE:] -=\
+            NP.matrix(l10) * NP.matrix(l10.T)
 
 
 def forwardsub(l10, l00, g10):
@@ -65,9 +66,13 @@ def forwardsub(l10, l00, g10):
 
     l10 += NP.matrix(l10T.T)
 
-def update_remaining_submatrix(l10):
-    """updates g11"""
-    return NP.matrix(l10) * NP.matrix(l10.T)
+    
+def is_pos_def(matrix_in):
+    """
+    checks if the matrix is a positive definite matrix. I found the algorithm
+    at https://stackoverflow.com/questions/16266720/find-out-if-matrix-is-positive-definite-with-numpy#16270026.
+    """
+    return NP.all(NP.linalg.eigvals(matrix_in) > 0)
 
 
 def main(file_a, out_file):
@@ -79,13 +84,15 @@ def main(file_a, out_file):
     matrix_a = NP.matrix(NP.loadtxt(file_a))
     matrix_g = matrix_a.T * matrix_a
     matrix_l = NP.zeros([matrix_g.shape[0], matrix_g.shape[0]])
-    block_cholesky(matrix_g, matrix_l)
-    print matrix_l
-    print matrix_a.T * matrix_a
-    print matrix_l * NP.matrix(matrix_l.T)
+    if is_pos_def(matrix_g):
+        block_cholesky(matrix_g, matrix_l)
+        print matrix_l
+        print matrix_a.T * matrix_a
+        print matrix_l * NP.matrix(matrix_l.T)
 
-    print NP.testing.assert_array_almost_equal(matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
-    # print NP.savetxt(out_file, matrix_out, '%20.8f')
+        print NP.testing.assert_array_almost_equal(matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
+    else:
+        print "Not pos def"
 
 
 if __name__ == '__main__':
