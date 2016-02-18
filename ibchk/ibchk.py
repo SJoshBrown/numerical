@@ -41,7 +41,7 @@ def block_cholesky(mat_in, mat_l):
     """
     for i in range(0, mat_in.shape[0], BASE_SIZE):
         g00 = mat_in[i:i + BASE_SIZE, i:i + BASE_SIZE]
-        l00 = mat_l[i:i + BASE_SIZE, i:i + BASE_SIZE] 
+        l00 = mat_l[i:i + BASE_SIZE, i:i + BASE_SIZE]
         l00 += cholesky_decompose(g00)
         g10 = mat_in[i + BASE_SIZE:, i:i + BASE_SIZE]
         l10 = mat_l[i + BASE_SIZE:, i:i + BASE_SIZE]
@@ -64,11 +64,11 @@ def forwardsub(l10, l00, g10):
                     row_sum += l00[j, k] * l10T[k, i]
 
     l10 += NP.matrix(l10T.T)
-    
+
 def update_remaining_submatrix(l10):
     """updates g11"""
     return NP.matrix(l10) * NP.matrix(l10.T)
-    
+
 
 def main(file_a, out_file):
     """
@@ -84,6 +84,7 @@ def main(file_a, out_file):
     print matrix_a.T * matrix_a
     print matrix_l * NP.matrix(matrix_l.T)
 
+    print NP.testing.assert_array_almost_equal(matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
     # print NP.savetxt(out_file, matrix_out, '%20.8f')
 
 
