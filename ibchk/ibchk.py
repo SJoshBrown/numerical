@@ -11,6 +11,7 @@ import numpy
 BASE_SIZE = int(argv[3])
 NP = numpy
 
+
 def cholesky_decompose(mat_in):
     """
     Use Cholesky's algorithm to decompose an nxn matrix and return L
@@ -18,7 +19,6 @@ def cholesky_decompose(mat_in):
     https://www.youtube.com/watch?v=NppyUqgQqd0
     """
     size = mat_in.shape[0]
-    print "decomposing %dx%d matrix" % (size, size)
     matrix_l = NP.zeros([size, size])
     for i in xrange(size):
         for j in xrange(i + 1):
@@ -34,15 +34,40 @@ def cholesky_decompose(mat_in):
 
     return matrix_l
 
+
 def block_cholesky(mat_in, mat_l):
     """
     block decompose
     """
     for i in range(0, mat_in.shape[0], BASE_SIZE):
-        mat_l[i:i + BASE_SIZE, i:i + BASE_SIZE] += \
-            cholesky_decompose(mat_in[i:i + BASE_SIZE, i:i + BASE_SIZE])
+        g00 = mat_in[i:i + BASE_SIZE, i:i + BASE_SIZE]
+        l00 = mat_l[i:i + BASE_SIZE, i:i + BASE_SIZE] 
+        l00 += cholesky_decompose(g00)
+        g10 = mat_in[i + BASE_SIZE:, i:i + BASE_SIZE]
+        l10 = mat_l[i + BASE_SIZE:, i:i + BASE_SIZE]
+        
+        forwardsub(l10, l00, g10)
+        
+
+        
         print mat_l
 
+
+def forwardsub(l10, l00, g10):
+    """calculate l10 by forward substitution"""
+    g10T = NP.matrix(g10.T)
+    l10T = NP.matrix(l10.T)
+    for i in range(0, l10T.shape[1]):
+        for j in range(0, l00.shape[1]):
+            row_sum = 0
+            for k in xrange(j + 1):
+                if j == k:
+                    l10T[k, i] += (g10T[j, i] - row_sum) / l00[j, j]
+                else:
+                    row_sum += l00[j, k] * l10T[k, i]
+
+    l10 += NP.matrix(l10T.T)
+    
 
 def main(file_a, out_file):
     """
