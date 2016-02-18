@@ -5,41 +5,56 @@ CS 3513 - Numerical methods
 Due - 2/24/16
 """
 from sys import argv
-import numpy
 import math
+import numpy
 
-BASE_SIZE = argv[3]
+BASE_SIZE = int(argv[3])
 NP = numpy
 
-def cholesky_decompose(square_matrix):
-    print square_matrix
-    n = square_matrix.shape[0]
-    newMatrix = NP.zeros([n, n])
-    for i in xrange(n):
+def cholesky_decompose(mat_in):
+    """
+    Use Cholesky's algorithm to decompose an nxn matrix and return L
+    I used the algorithm found in this video.
+    https://www.youtube.com/watch?v=NppyUqgQqd0
+    """
+    size = mat_in.shape[0]
+    print "decomposing %dx%d matrix" % (size, size)
+    matrix_l = NP.zeros([size, size])
+    for i in xrange(size):
         for j in xrange(i + 1):
             line_sum = 0.0
             if i == j:
                 for k in xrange(j):
-                    line_sum += newMatrix[i, k] * newMatrix[i, k]
-                newMatrix[i, i] = math.sqrt(square_matrix[i, i] - line_sum)
+                    line_sum += matrix_l[i, k] * matrix_l[i, k]
+                matrix_l[i, i] = math.sqrt(mat_in[i, i] - line_sum)
             else:
                 for k in xrange(j):
-                    line_sum += newMatrix[j, k] * newMatrix[i, k]
-                newMatrix[i, j] = (square_matrix[i, j] - line_sum) / newMatrix[j, j]
+                    line_sum += matrix_l[j, k] * matrix_l[i, k]
+                matrix_l[i, j] = (mat_in[i, j] - line_sum) / matrix_l[j, j]
 
-    print newMatrix
-    print NP.matrix(newMatrix) * NP.matrix(newMatrix.T)
-    
+    return matrix_l
+
+def block_cholesky(mat_in, mat_l):
+    """
+    block decompose
+    """
+    for i in range(0, mat_in.shape[0], BASE_SIZE):
+        mat_l[i:i + BASE_SIZE, i:i + BASE_SIZE] += \
+            cholesky_decompose(mat_in[i:i + BASE_SIZE, i:i + BASE_SIZE])
+        print mat_l
+
 
 def main(file_a, out_file):
     """
     Takes a matrix from file A, calculates a Gram matrix by taking A transpose
-    multipied by A. Then outputs the Cholesky decomposition of that Gram matrix
-    to the specified output file.
+    multipied by A. Then outputs the Cholesky decomposition L of that Gram
+    matrix to the specified output file.
     """
     matrix_a = NP.matrix(NP.loadtxt(file_a))
     matrix_g = matrix_a.T * matrix_a
-    cholesky_decompose(matrix_g)
+    matrix_l = NP.zeros([matrix_g.shape[0], matrix_g.shape[0]])
+    block_cholesky(matrix_g, matrix_l)
+
     # print NP.savetxt(out_file, matrix_out, '%20.8f')
 
 
