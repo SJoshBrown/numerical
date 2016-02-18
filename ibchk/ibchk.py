@@ -45,12 +45,9 @@ def block_cholesky(mat_in, mat_l):
         l00 += cholesky_decompose(g00)
         g10 = mat_in[i + BASE_SIZE:, i:i + BASE_SIZE]
         l10 = mat_l[i + BASE_SIZE:, i:i + BASE_SIZE]
-        
         forwardsub(l10, l00, g10)
-        
 
-        
-        print mat_l
+        mat_in[i + BASE_SIZE:, i + BASE_SIZE:] -= update_remaining_submatrix(l10)
 
 
 def forwardsub(l10, l00, g10):
@@ -68,6 +65,10 @@ def forwardsub(l10, l00, g10):
 
     l10 += NP.matrix(l10T.T)
     
+def update_remaining_submatrix(l10):
+    """updates g11"""
+    return NP.matrix(l10) * NP.matrix(l10.T)
+    
 
 def main(file_a, out_file):
     """
@@ -79,6 +80,9 @@ def main(file_a, out_file):
     matrix_g = matrix_a.T * matrix_a
     matrix_l = NP.zeros([matrix_g.shape[0], matrix_g.shape[0]])
     block_cholesky(matrix_g, matrix_l)
+    print matrix_l
+    print matrix_a.T * matrix_a
+    print matrix_l * NP.matrix(matrix_l.T)
 
     # print NP.savetxt(out_file, matrix_out, '%20.8f')
 
