@@ -34,7 +34,8 @@ def cholesky_decompose(to_decompose, mat_l):
 
 def block_cholesky(mat_in, mat_l, block_size):
     """
-    Takes two arguments mat_in and mat_l. Using blocks of size
+    Takes two arguments mat_in and mat_l. Decomposes matrix_in into
+    pre-initialized zero matrix matrix_l using blocks of size block_size.
     """
     for i in range(0, mat_in.shape[0], block_size):
         g00 = mat_in[i:i + block_size, i:i + block_size]
