@@ -15,10 +15,10 @@ else:
 NP = numpy
 
 
-def cholesky_decompose(mat_in):
+def cholesky_decompose(mat_in, l00):
     """
     Use Cholesky's algorithm to decompose an nxn matrix and return L
-    I used the algorithm found in this video.
+    I developed the algorithm using the method found in this video.
     https://www.youtube.com/watch?v=NppyUqgQqd0
     """
     size = mat_in.shape[0]
@@ -35,7 +35,7 @@ def cholesky_decompose(mat_in):
                     line_sum += matrix_l[j, k] * matrix_l[i, k]
                 matrix_l[i, j] = (mat_in[i, j] - line_sum) / matrix_l[j, j]
 
-    return matrix_l
+    l00 += matrix_l
 
 
 def block_cholesky(mat_in, mat_l):
@@ -45,7 +45,7 @@ def block_cholesky(mat_in, mat_l):
     for i in range(0, mat_in.shape[0], BASE_SIZE):
         g00 = mat_in[i:i + BASE_SIZE, i:i + BASE_SIZE]
         l00 = mat_l[i:i + BASE_SIZE, i:i + BASE_SIZE]
-        l00 += cholesky_decompose(g00)
+        cholesky_decompose(g00, l00)
         g10 = mat_in[i + BASE_SIZE:, i:i + BASE_SIZE]
         l10 = mat_l[i + BASE_SIZE:, i:i + BASE_SIZE]
         forwardsub(l10, l00, g10)
@@ -72,8 +72,8 @@ def forwardsub(l10, l00, g10):
     
 def is_pos_def(matrix_in):
     """
-    checks if the matrix is a positive definite matrix. I found the algorithm at
-    https://stackoverflow.com/questions/16266720/find-out-if-matrix-is-positive-definite-with-numpy#16270026.
+    Returns true if the matrix is a positive definite matrix. I found the 
+    algorithm at https://stackoverflow.com/questions/16266720/
     """
     return NP.all(NP.linalg.eigvals(matrix_in) > 0)
 
@@ -89,10 +89,12 @@ def main(file_a, out_file):
     matrix_l = NP.zeros([matrix_g.shape[0], matrix_g.shape[0]])
     if is_pos_def(matrix_g):
         block_cholesky(matrix_g, matrix_l)
+        
+        # TODO: remove this before submitting
         print matrix_l
-
         print NP.testing.assert_array_almost_equal\
             (matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
+            
         NP.savetxt(out_file, matrix_l, '%15.8f')
     else:
         print "Not pos def"
