@@ -8,49 +8,43 @@ from sys import argv
 import math
 import numpy
 
-if len(argv) == 4:
-    BASE_SIZE = int(argv[3])
-else:
-    BASE_SIZE = 8
 NP = numpy
 
 
-def cholesky_decompose(mat_in, l00):
+def cholesky_decompose(to_decompose, mat_l):
     """
-    Use Cholesky's algorithm to decompose an nxn matrix and return L
-    I developed the algorithm using the method found in this video.
+    Use Cholesky's algorithm to decompose an nxn matrix to_decompose and add it
+    to a predefined zero matrix mat_l I developed the algorithm using the method
+    found in this video.
     https://www.youtube.com/watch?v=NppyUqgQqd0
     """
-    size = mat_in.shape[0]
-    matrix_l = NP.zeros([size, size])
+    size = to_decompose.shape[0]
     for i in xrange(size):
         for j in xrange(i + 1):
             line_sum = 0.0
             if i == j:
                 for k in xrange(j):
-                    line_sum += matrix_l[i, k] * matrix_l[i, k]
-                matrix_l[i, i] = math.sqrt(mat_in[i, i] - line_sum)
+                    line_sum += mat_l[i, k] * mat_l[i, k]
+                mat_l[i, i] = math.sqrt(to_decompose[i, i] - line_sum)
             else:
                 for k in xrange(j):
-                    line_sum += matrix_l[j, k] * matrix_l[i, k]
-                matrix_l[i, j] = (mat_in[i, j] - line_sum) / matrix_l[j, j]
-
-    l00 += matrix_l
+                    line_sum += mat_l[j, k] * mat_l[i, k]
+                mat_l[i, j] = (to_decompose[i, j] - line_sum) / mat_l[j, j]
 
 
-def block_cholesky(mat_in, mat_l):
+def block_cholesky(mat_in, mat_l, block_size):
     """
-    block decompose
+    Takes two arguments mat_in and mat_l. Using blocks of size
     """
-    for i in range(0, mat_in.shape[0], BASE_SIZE):
-        g00 = mat_in[i:i + BASE_SIZE, i:i + BASE_SIZE]
-        l00 = mat_l[i:i + BASE_SIZE, i:i + BASE_SIZE]
+    for i in range(0, mat_in.shape[0], block_size):
+        g00 = mat_in[i:i + block_size, i:i + block_size]
+        l00 = mat_l[i:i + block_size, i:i + block_size]
         cholesky_decompose(g00, l00)
-        g10 = mat_in[i + BASE_SIZE:, i:i + BASE_SIZE]
-        l10 = mat_l[i + BASE_SIZE:, i:i + BASE_SIZE]
+        g10 = mat_in[i + block_size:, i:i + block_size]
+        l10 = mat_l[i + block_size:, i:i + block_size]
         forwardsub(l10, l00, g10)
 
-        mat_in[i + BASE_SIZE:, i + BASE_SIZE:] -=\
+        mat_in[i + block_size:, i + block_size:] -=\
             NP.matrix(l10) * NP.matrix(l10.T)
 
 
@@ -78,7 +72,7 @@ def is_pos_def(matrix_in):
     return NP.all(NP.linalg.eigvals(matrix_in) > 0)
 
 
-def main(file_a, out_file):
+def main(file_a, out_file, base_size):
     """
     Takes a matrix from file A, calculates a Gram matrix by taking A transpose
     multipied by A. Then outputs the Cholesky decomposition L of that Gram
@@ -88,17 +82,21 @@ def main(file_a, out_file):
     matrix_g = matrix_a.T * matrix_a
     matrix_l = NP.zeros([matrix_g.shape[0], matrix_g.shape[0]])
     if is_pos_def(matrix_g):
-        block_cholesky(matrix_g, matrix_l)
-        
+        block_cholesky(matrix_g, matrix_l, base_size)  
         # TODO: remove this before submitting
         print matrix_l
         print NP.testing.assert_array_almost_equal\
             (matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
-            
+  
         NP.savetxt(out_file, matrix_l, '%15.8f')
     else:
-        print "Not pos def"
+        print "Error, the input matrix is not positive definite."
 
 
 if __name__ == '__main__':
-    main(argv[1], argv[2])
+    try:
+        int(argv[3])
+        base_size = int(argv[3])
+    except (ValueError, IndexError):
+        base_size = 8
+    main(argv[1], argv[2], base_size)
