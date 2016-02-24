@@ -54,18 +54,18 @@ def forwardsub(l10, l00, g10):
     Use lower triangular matrix l00 to calulate l10 from g10 using forward
     substitution.
     """
-    g10T = NP.matrix(g10.T)
-    l10T = NP.matrix(l10.T)
-    for i in range(0, l10T.shape[1]):
+    g10_trans = NP.matrix(g10.T)
+    l10_trans = NP.matrix(l10.T)
+    for i in range(0, l10_trans.shape[1]):
         for j in range(0, l00.shape[1]):
             row_sum = 0
             for k in xrange(j + 1):
                 if j == k:
-                    l10T[k, i] += (g10T[j, i] - row_sum) / l00[j, j]
+                    l10_trans[k, i] += (g10_trans[j, i] - row_sum) / l00[j, j]
                 else:
-                    row_sum += l00[j, k] * l10T[k, i]
+                    row_sum += l00[j, k] * l10_trans[k, i]
 
-    l10 += NP.matrix(l10T.T)
+    l10 += NP.matrix(l10_trans.T)
 
 
 def is_pos_def(matrix_in):
@@ -87,11 +87,6 @@ def main(file_a, out_file, base_size):
     matrix_l = NP.zeros([matrix_g.shape[0], matrix_g.shape[0]])
     if is_pos_def(matrix_g):
         block_cholesky(matrix_g, matrix_l, base_size)
-        # TODO: remove this before submitting
-        print matrix_l
-        print NP.testing.assert_array_almost_equal\
-            (matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
-
         NP.savetxt(out_file, matrix_l, '%15.8f')
     else:
         print "Error, the input matrix is not positive definite."
