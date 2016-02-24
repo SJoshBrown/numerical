@@ -11,11 +11,11 @@ import numpy
 NP = numpy
 
 
-def cholesky_decompose(to_decompose, mat_l):
+def cholesky_decompose(to_decompose, chol_l):
     """
     Use Cholesky's algorithm to decompose an nxn matrix to_decompose and add it
-    to a predefined zero matrix mat_l I developed the algorithm using the method
-    found in this video.
+    to a predefined zero matrix chol_l. I developed the algorithm using the
+    method found in this video.
     https://www.youtube.com/watch?v=NppyUqgQqd0
     """
     size = to_decompose.shape[0]
@@ -24,12 +24,12 @@ def cholesky_decompose(to_decompose, mat_l):
             line_sum = 0.0
             if i == j:
                 for k in xrange(j):
-                    line_sum += mat_l[i, k] * mat_l[i, k]
-                mat_l[i, i] = math.sqrt(to_decompose[i, i] - line_sum)
+                    line_sum += chol_l[i, k] * chol_l[i, k]
+                chol_l[i, i] = math.sqrt(to_decompose[i, i] - line_sum)
             else:
                 for k in xrange(j):
-                    line_sum += mat_l[j, k] * mat_l[i, k]
-                mat_l[i, j] = (to_decompose[i, j] - line_sum) / mat_l[j, j]
+                    line_sum += chol_l[j, k] * chol_l[i, k]
+                chol_l[i, j] = (to_decompose[i, j] - line_sum) / chol_l[j, j]
 
 
 def block_cholesky(mat_in, mat_l, block_size):
