@@ -49,7 +49,10 @@ def block_cholesky(mat_in, mat_l, block_size):
 
 
 def forwardsub(l10, l00, g10):
-    """calculate l10 by forward substitution"""
+    """
+    Use lower triangular matrix l00 to calulate l10 from g10 using forward
+    substitution.
+    """
     g10T = NP.matrix(g10.T)
     l10T = NP.matrix(l10.T)
     for i in range(0, l10T.shape[1]):
@@ -63,10 +66,10 @@ def forwardsub(l10, l00, g10):
 
     l10 += NP.matrix(l10T.T)
 
-    
+
 def is_pos_def(matrix_in):
     """
-    Returns true if the matrix is a positive definite matrix. I found the 
+    Returns true if the matrix is a positive definite matrix. I found the
     algorithm at https://stackoverflow.com/questions/16266720/
     """
     return NP.all(NP.linalg.eigvals(matrix_in) > 0)
@@ -82,12 +85,12 @@ def main(file_a, out_file, base_size):
     matrix_g = matrix_a.T * matrix_a
     matrix_l = NP.zeros([matrix_g.shape[0], matrix_g.shape[0]])
     if is_pos_def(matrix_g):
-        block_cholesky(matrix_g, matrix_l, base_size)  
+        block_cholesky(matrix_g, matrix_l, base_size)
         # TODO: remove this before submitting
         print matrix_l
         print NP.testing.assert_array_almost_equal\
             (matrix_a.T * matrix_a, matrix_l * NP.matrix(matrix_l.T))
-  
+
         NP.savetxt(out_file, matrix_l, '%15.8f')
     else:
         print "Error, the input matrix is not positive definite."
@@ -96,7 +99,7 @@ def main(file_a, out_file, base_size):
 if __name__ == '__main__':
     try:
         int(argv[3])
-        base_size = int(argv[3])
+        BASE_SIZE = int(argv[3])
     except (ValueError, IndexError):
-        base_size = 8
-    main(argv[1], argv[2], base_size)
+        BASE_SIZE = 8
+    main(argv[1], argv[2], BASE_SIZE)
