@@ -29,14 +29,42 @@ def k_closest_points(points, center_point, k):
     return k_points
 
 
+def zero_mean(points):
+    n = len(points)
+    x = 0
+    y = 0
+    z = 0
+    for i in range(0, n):
+        x += points[i][0]
+        y += points[i][1]
+        z += points[i][2]
+    mean = [x/n, y/n, z/n]
+
+    centered_points = []
+
+    for i in range(0,len(points)):
+        centered_points.append(points[i] - mean)
+    return centered_points
+
+def estimate_normal(points, k_points, center_point):
+    """estimate normal"""
+    # Add the point we are considering back into the list to calculate on
+    # k + 1
+    k_points.append(center_point)
+    centered_points = zero_mean(k_points)
+    print centered_points
+
+
+
 def main(in_file, out_file, k_size):
     """
     main
     """
 
     points = NP.loadtxt(in_file)
-    k_points = k_closest_points(points, points[0], k_size)
-    print k_points
+    for i in range(0, len(points)):
+        k_points = k_closest_points(points, points[i], k_size)
+        estimate_normal(points, k_points, points[i])
 
 
 
