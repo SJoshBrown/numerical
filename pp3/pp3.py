@@ -9,6 +9,7 @@ import numpy
 
 NP = numpy
 
+
 def k_closest_points(points, center_point, k):
     distance_list = {}
     k_points = []
@@ -46,13 +47,20 @@ def zero_mean(points):
         centered_points.append(points[i] - mean)
     return centered_points
 
+
 def estimate_normal(points, k_points, center_point):
     """estimate normal"""
-    # Add the point we are considering back into the list to calculate on
-    # k + 1
+    # Add the point we are considering back into the list to calculate on k + 1
     k_points.append(center_point)
-    centered_points = zero_mean(k_points)
-    print centered_points
+
+    centered_points = NP.matrix(zero_mean(k_points))
+
+    cov_mat = (centered_points.T * centered_points)/(len(k_points) - 1)
+    w, v  = NP.linalg.eig(cov_mat)
+
+    min_val = min(w)
+    index = NP.where(w == min_val)
+    print "%s, %s" % (center_point, v[index])
 
 
 
@@ -65,7 +73,6 @@ def main(in_file, out_file, k_size):
     for i in range(0, len(points)):
         k_points = k_closest_points(points, points[i], k_size)
         estimate_normal(points, k_points, points[i])
-
 
 
 if __name__ == '__main__':
