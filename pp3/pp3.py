@@ -20,6 +20,7 @@ def k_closest_points(points, center_point, k):
 
     # Throw away first min. This is the point we are centered on.
     key = min(distance_list, key=distance_list.get)
+
     del[distance_list[key]]
 
     for i in range(0, k):
@@ -31,15 +32,7 @@ def k_closest_points(points, center_point, k):
 
 
 def zero_mean(points):
-    n = len(points)
-    x = 0
-    y = 0
-    z = 0
-    for i in range(0, n):
-        x += points[i][0]
-        y += points[i][1]
-        z += points[i][2]
-    mean = [x/n, y/n, z/n]
+    mean = calc_centroid(points)
 
     centered_points = []
 
@@ -48,31 +41,50 @@ def zero_mean(points):
     return centered_points
 
 
-def estimate_normal(points, k_points, center_point):
+def estimate_normal(points, k_points, center_point, centroid):
     """estimate normal"""
     # Add the point we are considering back into the list to calculate on k + 1
     k_points.append(center_point)
-
     centered_points = NP.matrix(zero_mean(k_points))
 
-    cov_mat = (centered_points.T * centered_points)/(len(k_points) - 1)
+    cov_mat = (centered_points.T * centered_points)/(len(centered_points) - 1)
     w, v  = NP.linalg.eig(cov_mat)
 
     min_val = min(w)
     index = NP.where(w == min_val)
-    print "%s, %s" % (center_point, v[index])
+    smallest_e_vect = v[index]
 
+    if NP.dot((center_point - centroid), smallest_e_vect.reshape(3,1)) < 0:
+        norm = NP.asarray(smallest_e_vect * -1)[0]
+    else:
+        norm = NP.asarray(smallest_e_vect)[0]
+
+    print "%s, %s" % (center_point, norm)
+
+
+def calc_centroid(points):
+    n = len(points)
+
+    x = 0
+    y = 0
+    z = 0
+    for i in range(0, n):
+        x += points[i][0]
+        y += points[i][1]
+        z += points[i][2]
+    centroid = [x/n, y/n, z/n]
+    return centroid
 
 
 def main(in_file, out_file, k_size):
     """
     main
     """
-
     points = NP.loadtxt(in_file)
+    centroid = calc_centroid(points)
     for i in range(0, len(points)):
         k_points = k_closest_points(points, points[i], k_size)
-        estimate_normal(points, k_points, points[i])
+        estimate_normal(points, k_points, points[i], centroid)
 
 
 if __name__ == '__main__':
