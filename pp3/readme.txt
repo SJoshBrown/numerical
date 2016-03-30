@@ -18,3 +18,8 @@ specified output file a list of points with corresponding normal unit vectors.
 The points in the output file will be line separated. The components of each
 point and normal vector will be separated by whitespace in the format
 x y z nx ny nz.
+
+My only real problem when developing this was getting stuck with seemingly
+"almost" correct output. In the end I was slicing numpys eigenvector matrix
+incorrectly as I did not realize that the eigen vectors were stored as
+a column matrix.

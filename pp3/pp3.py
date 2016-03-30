@@ -10,17 +10,18 @@ import numpy
 NP = numpy
 
 
-def k_closest_points(points, center_point, k):
+def k_closest_points(points, index, k):
     """
-    returns the k + 1 closest points to the center point param
+    returns the k + 1 closest points to points[index]
     """
     distance_list = {}
     k_points = []
 
     # Calculate all distances and add to a dict of [index, distance]
     for i in range(0, len(points)):
-        distance_list[str(i)] = NP.linalg.norm(center_point - points[i])
+        distance_list[str(i)] = NP.linalg.norm(points[index] - points[i])
 
+    # Add k + 1 closest points to new list and return it
     for i in range(0, k + 1):
         key = min(distance_list, key=distance_list.get)
         k_points.append(points[int(key)])
@@ -65,15 +66,11 @@ def calc_centroid(points):
     """
     n = len(points)
 
-    x = 0
-    y = 0
-    z = 0
+    point_sum = [0, 0, 0]
     for i in range(0, n):
-        x += points[i][0]
-        y += points[i][1]
-        z += points[i][2]
-    centroid = [x/n, y/n, z/n]
-    return centroid
+        point_sum += points[i]
+
+    return point_sum/n
 
 
 def main(in_file, out_file, k_size):
@@ -86,8 +83,7 @@ def main(in_file, out_file, k_size):
     centroid = calc_centroid(points)
     normals = []
     for i in range(0, len(points)):
-        print i
-        k_points = k_closest_points(points, points[i], k_size)
+        k_points = k_closest_points(points, i, k_size)
         norm = estimate_normal(k_points)
         if NP.dot((points[i] - centroid), norm) < 0:
             norm = norm * -1
@@ -95,7 +91,7 @@ def main(in_file, out_file, k_size):
         normals.append(norm.reshape(1,3)[0])
 
     output = NP.concatenate((points, normals), axis=1)
-    NP.savetxt(out_file, output)
+    NP.savetxt(out_file, output, '%f')
 
 if __name__ == '__main__':
     try:
