@@ -42,7 +42,7 @@ def zero_mean(points):
     return centered_points
 
 
-def estimate_normal(k_points, center_point):
+def estimate_normal(k_points):
     """
     Takes a set of points and first calculates the covariance matrix. Then
     returns the eigenvector associated with the smallest eigen value for that
@@ -88,7 +88,7 @@ def main(in_file, out_file, k_size):
     for i in range(0, len(points)):
         print i
         k_points = k_closest_points(points, points[i], k_size)
-        norm = estimate_normal(k_points, points[i])
+        norm = estimate_normal(k_points)
         if NP.dot((points[i] - centroid), norm) < 0:
             norm = norm * -1
         
