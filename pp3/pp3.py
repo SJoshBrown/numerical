@@ -42,34 +42,27 @@ def zero_mean(points):
     return centered_points
 
 
-def estimate_normal(k_points, center_point, centroid):
+def estimate_normal(k_points, center_point):
     """
-    Takes a set of points and returns the estimated normal vector
+    Takes a set of points and first calculates the covariance matrix. Then
+    returns the eigenvector associated with the smallest eigen value for that
+    matrix.
     """
-    # Add the point we are considering back into the list to calculate on k + 1
-    # k_points.append(center_point)
     centered_points = NP.matrix(zero_mean(k_points))
 
-    # (Z.T * Z) / k   3xkx1  kx1x3 = 3 x 3
     cov_mat = (centered_points.T * centered_points)/(len(k_points))
-    # eigenvalue decomp 3 eigvectors 3 eigenvalues
     e_val, e_vec  = NP.linalg.eig(cov_mat)
 
     min_index = NP.argmin(e_val)
 
-    smallest_e_vect = e_vec[:,min_index]
-
-
-
-    if NP.dot((center_point - centroid), smallest_e_vect) < 0:
-        norm = NP.asarray(smallest_e_vect * -1)
-    else:
-        norm = NP.asarray(smallest_e_vect)
-
-    return norm.reshape(1,3)[0]
+    return  NP.asarray(e_vec[:,min_index])
 
 
 def calc_centroid(points):
+    """
+    Take a set of points as an argument and returns the centroid for those
+    points.
+    """
     n = len(points)
 
     x = 0
@@ -85,7 +78,9 @@ def calc_centroid(points):
 
 def main(in_file, out_file, k_size):
     """
-    main
+    pp3.py main function. Takes 3 CLI arguments in_file, out_file and k size.
+    pp3 calculates normal estimations based on nearest neighbor point clouds
+    of size k.
     """
     points = NP.loadtxt(in_file)
     centroid = calc_centroid(points)
@@ -93,8 +88,11 @@ def main(in_file, out_file, k_size):
     for i in range(0, len(points)):
         print i
         k_points = k_closest_points(points, points[i], k_size)
-        norm = estimate_normal(k_points, points[i], centroid)
-        normals.append(norm)
+        norm = estimate_normal(k_points, points[i])
+        if NP.dot((points[i] - centroid), norm) < 0:
+            norm = norm * -1
+        
+        normals.append(norm.reshape(1,3)[0])
 
     output = NP.concatenate((points, normals), axis=1)
     NP.savetxt(out_file, output)
