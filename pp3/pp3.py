@@ -91,7 +91,7 @@ def main(in_file, out_file, k_size):
         normals.append(norm.reshape(1,3)[0])
 
     output = NP.concatenate((points, normals), axis=1)
-    NP.savetxt(out_file, output, '%f')
+    NP.savetxt(out_file, output)
 
 if __name__ == '__main__':
     try:
