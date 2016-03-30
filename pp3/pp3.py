@@ -11,6 +11,9 @@ NP = numpy
 
 
 def k_closest_points(points, center_point, k):
+    """
+    returns the k + 1 closest points to the center point param
+    """
     distance_list = {}
     k_points = []
 
@@ -18,12 +21,7 @@ def k_closest_points(points, center_point, k):
     for i in range(0, len(points)):
         distance_list[str(i)] = NP.linalg.norm(center_point - points[i])
 
-    # Throw away first min. This is the point we are centered on.
-    key = min(distance_list, key=distance_list.get)
-
-    del[distance_list[key]]
-
-    for i in range(0, k):
+    for i in range(0, k + 1):
         key = min(distance_list, key=distance_list.get)
         k_points.append(points[int(key)])
         del[distance_list[key]]
@@ -32,8 +30,11 @@ def k_closest_points(points, center_point, k):
 
 
 def zero_mean(points):
+    """
+    Takes a set of points as a param and returns a new set based on the param
+    that have been centered around a zero mean
+    """
     mean = calc_centroid(points)
-
     centered_points = []
 
     for i in range(0,len(points)):
@@ -41,25 +42,31 @@ def zero_mean(points):
     return centered_points
 
 
-def estimate_normal(points, k_points, center_point, centroid):
-    """estimate normal"""
+def estimate_normal(k_points, center_point, centroid):
+    """
+    Takes a set of points and returns the estimated normal vector
+    """
     # Add the point we are considering back into the list to calculate on k + 1
-    k_points.append(center_point)
+    # k_points.append(center_point)
     centered_points = NP.matrix(zero_mean(k_points))
 
-    cov_mat = (centered_points.T * centered_points)/(len(centered_points) - 1)
-    w, v  = NP.linalg.eig(cov_mat)
+    # (Z.T * Z) / k   3xkx1  kx1x3 = 3 x 3
+    cov_mat = (centered_points.T * centered_points)/(len(k_points))
+    # eigenvalue decomp 3 eigvectors 3 eigenvalues
+    e_val, e_vec  = NP.linalg.eig(cov_mat)
 
-    min_val = min(w)
-    index = NP.where(w == min_val)
-    smallest_e_vect = v[index]
+    min_index = NP.argmin(e_val)
 
-    if NP.dot((center_point - centroid), smallest_e_vect.reshape(3,1)) < 0:
-        norm = NP.asarray(smallest_e_vect * -1)[0]
+    smallest_e_vect = e_vec[:,min_index]
+
+
+
+    if NP.dot((center_point - centroid), smallest_e_vect) < 0:
+        norm = NP.asarray(smallest_e_vect * -1)
     else:
-        norm = NP.asarray(smallest_e_vect)[0]
+        norm = NP.asarray(smallest_e_vect)
 
-    print "%s, %s" % (center_point, norm)
+    return norm.reshape(1,3)[0]
 
 
 def calc_centroid(points):
@@ -82,10 +89,15 @@ def main(in_file, out_file, k_size):
     """
     points = NP.loadtxt(in_file)
     centroid = calc_centroid(points)
+    normals = []
     for i in range(0, len(points)):
+        print i
         k_points = k_closest_points(points, points[i], k_size)
-        estimate_normal(points, k_points, points[i], centroid)
+        norm = estimate_normal(k_points, points[i], centroid)
+        normals.append(norm)
 
+    output = NP.concatenate((points, normals), axis=1)
+    NP.savetxt(out_file, output)
 
 if __name__ == '__main__':
     try:
