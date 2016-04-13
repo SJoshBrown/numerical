@@ -11,12 +11,12 @@ from datetime import datetime
 NP = numpy
 
 
-def null(test_set, null_result):
+def null_method(x):
+    return 1
     
-    for i in range(0, len(test_set)):
-        null_result[i] = 1
-        
-    return null_result
+def std_lib_method(x):
+    return x**(1/3)
+    
 
 def main():
     """
@@ -24,14 +24,23 @@ def main():
     """
     
     test_set = NP.random.uniform(1000000, 100000000, 10000)
+    TEST_SET_LEN = len(test_set)
     null_result = NP.empty(10000)
-    standard_result = []
+    std_lib_result = NP.empty(10000)
+
+
+    start = datetime.now()
+    for i in range(0, TEST_SET_LEN):
+        null_result[i] = null_method(test_set[i])
+    finish = datetime.now()
+    print finish - start
     
     start = datetime.now()
-    null_result = null(test_set, null_result)
+    for i in range(0, TEST_SET_LEN):
+        std_lib_result[i] = std_lib_method(test_set[i])
     finish = datetime.now()
-    
     print finish - start
+
 
 
 
