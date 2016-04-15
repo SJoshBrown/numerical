@@ -27,7 +27,10 @@ def std_lib_method(Y):
 
 
 def newtons(Y):
-    """Return the cube root of Y using the standard newtowns method"""
+    """
+    Return the cube root of Y using the standard newtowns method. This is
+    a modified algorithm from my in class notes.
+    """
     aOld = 0
     A, b = math.frexp(Y)
 
@@ -41,7 +44,8 @@ def newtons(Y):
 def optimized_newtons(Y):
     """
     Return the cube root of Y using Newtons method optimized for floating
-    point numbers.
+    point numbers. This is a modified algorithm from the pp4part1.pdf handout.
+    As well as my in class notes.
     """
     a, b = math.frexp(Y)
     rem = b % 3;
