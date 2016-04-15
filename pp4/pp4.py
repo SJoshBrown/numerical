@@ -18,24 +18,34 @@ TWO_POW_TWO_THIRD = 2**(2./3)
 
 
 def null_method(Y):
+    """Return 1 to time function call overhead"""
     return 1
 
 
 def std_lib_method(Y):
+    """Return the cube root of Y to time the standard method"""
     return Y**(1./3)
 
 
 def newtons(Y):
+    """Return the cube root of Y using the standard newtowns method"""
     aOld = 0
-    A = Y
+    A, b = math.frexp(Y)
 
+    count = 0
     while (abs(A - aOld)/abs(A)) > (EP_SHIFTED):
+        count += 1
         aOld = A
         A = A - ONETHIRD * (A - Y/(A*A))
+
     return A
 
 
 def optimized_newtons(Y):
+    """
+    Return the cube root of Y using Newtons method optimized for floating
+    point numbers.
+    """
     a, b = math.frexp(Y)
     rem = b % 3;
 
@@ -54,7 +64,7 @@ def optimized_newtons(Y):
 
 def output(null_time, std_time, newtons_time, optimized_time, newtons_error,
            optimized_error, newtons_ratio, optimized_ratio):
-    print "\n" * 3
+    """Print output for pp4.py"""
     print "BEST TIMES"
     print "Best Null Time:            %s" % null_time
     print "Best Standard Method Time: %s" % std_time
@@ -70,11 +80,12 @@ def output(null_time, std_time, newtons_time, optimized_time, newtons_error,
 
 def main():
     """
-    pp4.py main function.
+    pp4.py main function. Calculates the cube root of 10000 floating point
+    values using 3 different methods and times the results. Outputs best times,
+    time ratios compared to the standard method and the norm 1 errors as with
+    the results from the standard library method.
     """
-
     test_set = NP.random.uniform(100000000, 1000000, 10000)
-    # test_set = NP.random.uniform(10, 100, 10)
     TEST_SET_LEN = len(test_set)
     null_result = NP.empty(10000)
     std_lib_result = NP.empty(10000)
@@ -87,39 +98,38 @@ def main():
     optimized_time = datetime.timedelta(1)
 
     for i in range(0, 10):
+        # NULL
         start = datetime.datetime.now()
         for i in range(0, TEST_SET_LEN):
             null_result[i] = null_method(test_set[i])
         finish = datetime.datetime.now()
-        print finish - start
         if (finish - start) < null_time:
             null_time = finish - start 
-        print null_time
 
+        # STANDARD LIBRARY
         start = datetime.datetime.now()
         for i in range(0, TEST_SET_LEN):
             std_lib_result[i] = std_lib_method(test_set[i])
         finish = datetime.datetime.now()
-        print finish - start
         if (finish - start) < std_time:
             std_time = finish - start 
 
+        # NEWTONS METHOD
         start = datetime.datetime.now()
         for i in range(0, TEST_SET_LEN):
             newtons_result[i] = newtons(test_set[i])
         finish = datetime.datetime.now()
-        print finish - start
         if (finish - start) < newtons_time:
             newtons_time = finish - start 
 
+        # OPTIMIZED METHOD
         start = datetime.datetime.now()
         for i in range(0, TEST_SET_LEN):
             optimized_result[i] = optimized_newtons(test_set[i])
         finish = datetime.datetime.now()
-        print finish - start
         if (finish - start) < optimized_time:
             optimized_time = finish - start         
-    
+
 
     # Convert datetime.deltatime objects to float
     null_time = null_time.total_seconds()
@@ -127,12 +137,15 @@ def main():
     newtons_time = newtons_time.total_seconds()
     optimized_time = optimized_time.total_seconds()
 
+    # Calculate Ratios
     optimized_ratio = (optimized_time - null_time) / (std_time - null_time)
     newtons_ratio = (newtons_time - null_time) / (std_time - null_time)
 
+    # Calculate Norm 1 Errors
     newtons_error = NP.linalg.norm(newtons_result - std_lib_result, ord=1)
     optimized_error = NP.linalg.norm(optimized_result - std_lib_result, ord=1)
 
+    # Output
     output(null_time, std_time, newtons_time, optimized_time, newtons_error, 
            optimized_error, newtons_ratio, optimized_ratio)
 
