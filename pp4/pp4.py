@@ -32,9 +32,7 @@ def newtons(Y):
     aOld = 0
     A, b = math.frexp(Y)
 
-    count = 0
     while (abs(A - aOld)/abs(A)) > (EP_SHIFTED):
-        count += 1
         aOld = A
         A = A - ONETHIRD * (A - Y/(A*A))
 
@@ -50,9 +48,9 @@ def optimized_newtons(Y):
     rem = b % 3;
 
     x1 = .7937 + ((2 * a) - 1) * (.2063)
-    x2 = (1./3.) * (( a / (x1 * x1)) + (2 * x1 ))
-    x2 = (1./3.) * (( a / (x2 * x2)) + (2 * x2 ))
-    x2 = (1./3.) * (( a / (x2 * x2)) + (2 * x2 ))
+    x2 = (1./3.) * (( a / (x1 * x1)) + (x1 + x1 ))
+    x2 = (1./3.) * (( a / (x2 * x2)) + (x2 + x2 ))
+    x2 = (1./3.) * (( a / (x2 * x2)) + (x2 + x2 ))
 
     if rem == 0:
         return math.ldexp(x2, b/3)
@@ -71,11 +69,11 @@ def output(null_time, std_time, newtons_time, optimized_time, newtons_error,
     print "Best Newtons Method Time:  %s" % newtons_time
     print "Best Optimized Time:       %s" % optimized_time
     print "\nBEST TIME RATIOS"
-    print "Newtons Method Ratio       %s" % newtons_ratio
-    print "Optimized Method Ratio     %s" % optimized_ratio
+    print "Newtons Method Ratio       %.2f" % newtons_ratio
+    print "Optimized Method Ratio     %.2f" % optimized_ratio
     print "\nNORM 1 ERROR"
-    print "Newtons Error              %.15f" % newtons_error
-    print "Optimized Error            %.15f" % optimized_error
+    print "Newtons Error              %.10f" % newtons_error
+    print "Optimized Error            %.10f" % optimized_error
 
 
 def main():
