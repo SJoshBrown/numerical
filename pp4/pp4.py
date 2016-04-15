@@ -11,7 +11,7 @@ import math
 import datetime
 
 NP = numpy
-ONETHIRD = 1./3.
+ONE_THIRD = 1./3.
 EP_SHIFTED = sys.float_info.epsilon * 10
 TWO_POW_ONE_THIRD = 2**(1./3)
 TWO_POW_TWO_THIRD = 2**(2./3)
@@ -32,9 +32,9 @@ def newtons(Y):
     aOld = 0
     A, b = math.frexp(Y)
 
-    while (abs(A - aOld)/abs(A)) > (EP_SHIFTED):
+    while abs(A - aOld)/abs(A) > EP_SHIFTED:
         aOld = A
-        A = A - ONETHIRD * (A - Y/(A*A))
+        A = A - ONE_THIRD * (A - Y/(A*A))
 
     return A
 
@@ -47,10 +47,10 @@ def optimized_newtons(Y):
     a, b = math.frexp(Y)
     rem = b % 3;
 
-    x1 = .7937 + ((2 * a) - 1) * (.2063)
-    x2 = (1./3.) * (( a / (x1 * x1)) + (x1 + x1 ))
-    x2 = (1./3.) * (( a / (x2 * x2)) + (x2 + x2 ))
-    x2 = (1./3.) * (( a / (x2 * x2)) + (x2 + x2 ))
+    x1 = .5874 + (a + a) * .2063
+    x2 = ONE_THIRD * ( a / (x1 * x1) + x1 + x1)
+    x2 = ONE_THIRD * ( a / (x2 * x2) + x2 + x2)
+    x2 = ONE_THIRD * ( a / (x2 * x2) + x2 + x2)
 
     if rem == 0:
         return math.ldexp(x2, b/3)
@@ -127,7 +127,6 @@ def main():
         finish = datetime.datetime.now()
         if (finish - start) < optimized_time:
             optimized_time = finish - start         
-
 
     # Convert datetime.deltatime objects to float
     null_time = null_time.total_seconds()
