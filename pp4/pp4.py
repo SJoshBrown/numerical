@@ -17,7 +17,6 @@ TWO_POW_ONE_THIRD = 2**(1./3)
 TWO_POW_TWO_THIRD = 2**(2./3)
 
 
-
 def null_method(Y):
     return 1
 
@@ -34,43 +33,23 @@ def newtons(Y):
         aOld = A
         A = A - ONETHIRD * (A - Y/(A*A))
     return A
-    
-    
+
+
 def optimized_newtons(Y):
     a, b = math.frexp(Y)
     rem = b % 3;
-    
+
     x1 = .7937 + ((2 * a) - 1) * (.2063)
     x2 = (1./3.) * (( a / (x1 * x1)) + (2 * x1 ))
     x2 = (1./3.) * (( a / (x2 * x2)) + (2 * x2 ))
     x2 = (1./3.) * (( a / (x2 * x2)) + (2 * x2 ))
-    
-    
-    # if rem == 0:
-    #     ANS = math.ldexp(x2, b/3)
-    # elif rem == 2:
-    #     ANS = math.ldexp(x2, b/3) * TWO_POW_TWO_THIRD
-    # else:
-    #     ANS = math.ldexp(x2, b/3) * TWO_POW_ONE_THIRD 
-    # 
-    # print "set"
-    # print ANS
-    # print Y**(1./3)
-    
-    # return ANS
-    
+
     if rem == 0:
         return math.ldexp(x2, b/3)
     elif rem == 1:
         return math.ldexp(x2, b/3) * TWO_POW_ONE_THIRD
     else:
-        return math.ldexp(x2, b/3) * TWO_POW_TWO_THIRD 
-    
-    
-
-    
-    # TODO: remove when done testing
-    return math.ldexp(x2, b/3) * 2**(rem/3.)    
+        return math.ldexp(x2, b/3) * TWO_POW_TWO_THIRD  
 
 
 def output(null_time, std_time, newtons_time, optimized_time, newtons_error,
@@ -88,6 +67,7 @@ def output(null_time, std_time, newtons_time, optimized_time, newtons_error,
     print "Newtons Error              %.15f" % newtons_error
     print "Optimized Error            %.15f" % optimized_error
 
+
 def main():
     """
     pp4.py main function.
@@ -100,12 +80,12 @@ def main():
     std_lib_result = NP.empty(10000)
     newtons_result = NP.empty(10000)
     optimized_result = NP.empty(10000)
-    
+
     null_time = datetime.timedelta(1)
     std_time = datetime.timedelta(1)
     newtons_time = datetime.timedelta(1)
     optimized_time = datetime.timedelta(1)
-    
+
     for i in range(0, 10):
         start = datetime.datetime.now()
         for i in range(0, TEST_SET_LEN):
@@ -131,7 +111,7 @@ def main():
         print finish - start
         if (finish - start) < newtons_time:
             newtons_time = finish - start 
-        
+
         start = datetime.datetime.now()
         for i in range(0, TEST_SET_LEN):
             optimized_result[i] = optimized_newtons(test_set[i])
@@ -140,38 +120,22 @@ def main():
         if (finish - start) < optimized_time:
             optimized_time = finish - start         
     
-    
+
     # Convert datetime.deltatime objects to float
     null_time = null_time.total_seconds()
     std_time = std_time.total_seconds()
     newtons_time = newtons_time.total_seconds()
     optimized_time = optimized_time.total_seconds()
-    
+
     optimized_ratio = (optimized_time - null_time) / (std_time - null_time)
     newtons_ratio = (newtons_time - null_time) / (std_time - null_time)
 
     newtons_error = NP.linalg.norm(newtons_result - std_lib_result, ord=1)
     optimized_error = NP.linalg.norm(optimized_result - std_lib_result, ord=1)
+
     output(null_time, std_time, newtons_time, optimized_time, newtons_error, 
            optimized_error, newtons_ratio, optimized_ratio)
 
 
-
-
 if __name__ == '__main__':
     main()
-
-
-
-# OUTPUT
-# Best Time
-#     Each Method (4 vals)
-#     
-# Ratio of best times (2 vals)
-#     (tnm - tnull) / (tstd - tnull)
-#     
-#     (texp - tnull) / (tstd - tnull)
-#     
-# 2 norm-1 errors
-#     ||rnm - rstd||1
-#     ||rexp - rstd||1 
