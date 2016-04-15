@@ -50,17 +50,17 @@ def optimized_newtons(Y):
     a, b = math.frexp(Y)
     rem = b % 3;
 
-    x1 = (a + a) * .2063 + .5874
-    x2 = ONE_THIRD * ( a / (x1 * x1) + x1 + x1)
-    x2 = ONE_THIRD * ( a / (x2 * x2) + x2 + x2)
-    x2 = ONE_THIRD * ( a / (x2 * x2) + x2 + x2)
+    x = (a + a) * .2063 + .5874
+    x = ONE_THIRD * ( a / (x * x) + x + x)
+    x = ONE_THIRD * ( a / (x * x) + x + x)
+    x = ONE_THIRD * ( a / (x * x) + x + x)
 
     if rem == 0:
-        return math.ldexp(x2, b/3)
+        return math.ldexp(x, b/3)
     elif rem == 1:
-        return math.ldexp(x2, b/3) * TWO_POW_ONE_THIRD
+        return math.ldexp(x, b/3) * TWO_POW_ONE_THIRD
     else:
-        return math.ldexp(x2, b/3) * TWO_POW_TWO_THIRD  
+        return math.ldexp(x, b/3) * TWO_POW_TWO_THIRD  
 
 
 def output(null_time, std_time, newtons_time, optimized_time, newtons_error,
