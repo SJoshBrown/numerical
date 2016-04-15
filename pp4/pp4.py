@@ -4,17 +4,16 @@ By Josh Brown
 CS 3513 - Numerical methods
 Due - 4/15/16
 """
-from sys import argv
+from sys import float_info
 import numpy
-import sys
 import math
 import datetime
 
 NP = numpy
 ONE_THIRD = 1./3.
-EP_SHIFTED = sys.float_info.epsilon * 10
-TWO_POW_ONE_THIRD = 2**(1./3)
-TWO_POW_TWO_THIRD = 2**(2./3)
+EP_SHIFTED = float_info.epsilon * 10
+TWO_POW_ONE_THIRD = pow(2, 1./3)
+TWO_POW_TWO_THIRD = pow(2, 2./3)
 
 
 def null_method(Y):
@@ -24,7 +23,7 @@ def null_method(Y):
 
 def std_lib_method(Y):
     """Return the cube root of Y to time the standard method"""
-    return Y**(1./3)
+    return pow(Y, ONE_THIRD)
 
 
 def newtons(Y):
@@ -47,7 +46,7 @@ def optimized_newtons(Y):
     a, b = math.frexp(Y)
     rem = b % 3;
 
-    x1 = .5874 + (a + a) * .2063
+    x1 = (a + a) * .2063 + .5874
     x2 = ONE_THIRD * ( a / (x1 * x1) + x1 + x1)
     x2 = ONE_THIRD * ( a / (x2 * x2) + x2 + x2)
     x2 = ONE_THIRD * ( a / (x2 * x2) + x2 + x2)
