@@ -19,6 +19,12 @@ as a null time that simulates the function call overhead. It also
 displays the error norms for Newton's method as well as the optimized
 version of Newton's method.
 
+I tested the script on two different machines that had some differences in
+performance.
+
+The following are the results from a system running Ubuntu 15.10 on an Intel i5 
+3.3 Ghz Sandy Bridge processor.
+
 BEST TIMES
 Best Null Time:            0.00207
 Best Standard Method Time: 0.004454
@@ -28,6 +34,23 @@ Best Optimized Time:       0.01466
 BEST TIME RATIOS
 Newtons Method Ratio       95.21
 Optimized Method Ratio     5.28
+
+NORM 1 ERROR
+Newtons Error              0.0000000011
+Optimized Error            0.0000000021
+
+The following output is from a system running OSX 10.11 on an Intel i5 2.9Ghz
+Ivy Bridge processor.
+
+BEST TIMES
+Best Null Time:            0.002599
+Best Standard Method Time: 0.00613
+Best Newtons Method Time:  0.722994
+Best Optimized Time:       0.012195
+
+BEST TIME RATIOS
+Newtons Method Ratio       204.02
+Optimized Method Ratio     2.72
 
 NORM 1 ERROR
 Newtons Error              0.0000000011
